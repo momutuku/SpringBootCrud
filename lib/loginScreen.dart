@@ -55,10 +55,11 @@ Future<UserInfo> loginUser(UserInfo user, BuildContext ctx)async{
       },
       body:json.encode(userr));
   if(response2.statusCode ==200){
+
     Navigator.push(
       ctx,
       MaterialPageRoute(
-          builder: (ctx) => produceScreen(user)),
+          builder: (ctx) => produceScreen(userinfo:user)),
     );
   }else{
     print("Error with auth: "+response2.body);

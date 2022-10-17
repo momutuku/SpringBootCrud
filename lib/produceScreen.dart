@@ -3,12 +3,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'loginScreen.dart';
+
 
 class produceScreen extends StatefulWidget {
-  final  userinfo;
-  produceScreen(this.userinfo);
+  var userinfo;
+
+  produceScreen( {this.userinfo});
   @override
-  State<produceScreen> createState() => _produceScreenState(userinfo);
+  State<produceScreen> createState() => _produceScreenState();
 }
 
 class UserInfo {
@@ -61,8 +64,7 @@ class UserInfo {
 
 Future<UserInfo> registerUser(UserInfo user, BuildContext ctx)async{
   var baseurl = "http://5e2b-105-21-41-70.ngrok.io";
-  var url = Uri.https(baseurl,"/create");
-  var authurl = Uri.parse("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCZga73Ed3tZ_F4XtbocUQ87VDxkTv-mMM");
+  var url = Uri.parse(baseurl+"/create");
   var response = await http.post(url,
       headers:<String,String>{
         "Content-Type":"application/json"
@@ -72,25 +74,6 @@ Future<UserInfo> registerUser(UserInfo user, BuildContext ctx)async{
   String resString = response.body;
   if(response.statusCode ==200){
     print(resString);
-    var userr =  user.authJson(user.user_email,user.user_password);
-
-    var response2 = await http.post(authurl,
-        headers:<String,String>{
-          "Content-Type":"application/json"
-        },
-        body:json.encode(userr));
-    if(response2.statusCode ==200){
-      Navigator.push(
-        ctx,
-        MaterialPageRoute(
-            builder: (ctx) => produceScreen(userr)),
-      );
-    }else{
-      print("Error with auth: "+response2.body);
-    }
-
-
-
   }else{
     print("Error: "+response.body);
   }
@@ -153,21 +136,13 @@ class ProductsList {
 class _produceScreenState extends State<produceScreen> {
 
 
-
-  _produceScreenState(userinfo);
-
-
-  static UserInfo get userinfo => userinfo;
-  UserInfo  user= userinfo;
-
-
-
   @override
   Widget build(BuildContext context) {
-    String user_name = user.user_name;
-    String user_email = user.user_email;
-    String user_created = user.user_created;
-    String user_password = user.user_password;
+    String user_name = widget.userinfo!.user_name;
+    String user_email = widget.userinfo!.user_email;
+    String user_created = widget.userinfo!.user_created;
+    String user_password = widget.userinfo!.user_password;
+    // UserInfo  user= widget.userinfo!;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -268,7 +243,7 @@ class _produceScreenState extends State<produceScreen> {
                           },
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: user.user_name,
+                            hintText: widget.userinfo!.user_name,
                             icon: Icon(Icons.people),
                           ),
                         ),
@@ -298,7 +273,7 @@ class _produceScreenState extends State<produceScreen> {
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             icon: Icon(Icons.email),
-                            hintText: user.user_email,
+                            hintText: widget.userinfo!.user_email,
                           ),
                         ),
                       ),
@@ -375,16 +350,12 @@ class _produceScreenState extends State<produceScreen> {
                       child: Center(
                         child: TextButton(
                           onPressed: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) => ProfileScreen()),
-                            // );
+
                             var user =  UserInfo(
-                              user_name: user_name!,
-                              user_email: user_email!,
-                              user_created: user_created!,
-                              user_password: user_password!,
+                              user_name: user_name,
+                              user_email: user_email,
+                              user_created: user_created,
+                              user_password: user_password,
                             );
                             registerUser(user,context);
 
@@ -420,10 +391,10 @@ class _produceScreenState extends State<produceScreen> {
                             //       builder: (context) => ProfileScreen()),
                             // );
                             var user =  UserInfo(
-                              user_name: user_name!,
-                              user_email: user_email!,
-                              user_created: user_created!,
-                              user_password: user_password!,
+                              user_name: user_name,
+                              user_email: user_email,
+                              user_created: user_created,
+                              user_password: user_password,
                             );
                             deleteUser(user,context);
 
