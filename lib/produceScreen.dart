@@ -101,7 +101,7 @@ Future<UserInfo> registerUser(UserInfo user, BuildContext ctx)async{
 
 Future<UserInfo> deleteUser(UserInfo user, BuildContext ctx)async{
 
-  var url = Uri.parse("http://localhost:8080/delete?user="+user.user_name);
+  var url = Uri.parse("http://5e2b-105-21-41-70.ngrok.io/delete?user="+user.user_name);
   var userr =  user.authJson(user.user_email,user.user_password);
   var response = await http.put(url,
       headers:<String,String>{
