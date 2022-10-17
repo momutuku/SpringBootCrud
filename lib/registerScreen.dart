@@ -46,8 +46,8 @@ class UserInfo {
 }
 
 Future<UserInfo> registerUser(UserInfo user, BuildContext ctx)async{
-
-var url = Uri.https("5e2b-105-21-41-70.ngrok.io","/create");
+  var baseurl = "http://5e2b-105-21-41-70.ngrok.io";
+var url = Uri.https(baseurl,"/create");
 var authurl = Uri.parse("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCZga73Ed3tZ_F4XtbocUQ87VDxkTv-mMM");
 var response = await http.post(url,
     headers:<String,String>{

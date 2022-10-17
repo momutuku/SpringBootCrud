@@ -60,8 +60,8 @@ class UserInfo {
 }
 
 Future<UserInfo> registerUser(UserInfo user, BuildContext ctx)async{
-
-  var url = Uri.https("5e2b-105-21-41-70.ngrok.io","/create");
+  var baseurl = "http://5e2b-105-21-41-70.ngrok.io";
+  var url = Uri.https(baseurl,"/create");
   var authurl = Uri.parse("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCZga73Ed3tZ_F4XtbocUQ87VDxkTv-mMM");
   var response = await http.post(url,
       headers:<String,String>{
@@ -100,8 +100,8 @@ Future<UserInfo> registerUser(UserInfo user, BuildContext ctx)async{
 
 
 Future<UserInfo> deleteUser(UserInfo user, BuildContext ctx)async{
-
-  var url = Uri.parse("http://5e2b-105-21-41-70.ngrok.io/delete?user="+user.user_name);
+var baseurl = "http://5e2b-105-21-41-70.ngrok.io";
+  var url = Uri.parse(baseurl+"/delete?user="+user.user_name);
   var userr =  user.authJson(user.user_email,user.user_password);
   var response = await http.put(url,
       headers:<String,String>{
