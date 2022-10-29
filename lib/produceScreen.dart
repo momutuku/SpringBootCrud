@@ -27,7 +27,7 @@ class produceScreen extends StatefulWidget {
 
 Future<List<ImagesUrl>> fetchImages() async {
 
-  Uri url = Uri.parse("https://jsonplaceholder.typicode.com/posts");
+  Uri url = Uri.parse("http://eplace_this/get?url=9fxvs47IdkNY7xK5aZGU");
   final response = await http.get(url);
 
   var responseData = json.decode(response.body);
@@ -128,7 +128,7 @@ class _produceScreenState extends State<produceScreen> {
                   children: [
                     SizedBox(height: 10),
                     Text(
-                      'User info',
+                      'Image Info',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,

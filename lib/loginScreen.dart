@@ -135,7 +135,7 @@ class AuthExceptionHandler {
   }
 }
 
-Future<AuthStatus> resetPassword({required String email}) async {
+Future<AuthStatus> resetPassword( {required String email}) async {
   final _auth = FirebaseAuth.instance;
   AuthStatus _status;
   _status = AuthStatus.successful;
@@ -317,11 +317,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       const EdgeInsets.fromLTRB(110.00, 0.00, 0.00, 0.0),
                       child: InkWell(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RegisterScreen()),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //       builder: (context) => RegisterScreen()),
+                          // );
+                          resetPassword(email:user_email!);
                         },
                         child: Text(
                           'Forgot PIN',
