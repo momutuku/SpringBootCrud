@@ -137,16 +137,40 @@ class AuthExceptionHandler {
   }
 }
 
-Future<AuthStatus> resetPassword( {required String email}) async {
- await Firebase.initializeApp();
-  final _auth = FirebaseAuth.instance;
-  AuthStatus _status;
-  _status = AuthStatus.successful;
-  await _auth
-      .sendPasswordResetEmail(email: email)
-      .then((value) => _status = AuthStatus.successful)
-      .catchError((e) => _status = AuthExceptionHandler.handleAuthException(e));
-  return _status;
+// Future<AuthStatus> resetPassword( {required String email}) async {
+//  await Firebase.initializeApp();
+//   final _auth = FirebaseAuth.instance;
+//   AuthStatus _status;
+//   _status = AuthStatus.successful;
+//   await _auth
+//       .sendPasswordResetEmail(email: email)
+//       .then((value) => _status = AuthStatus.successful)
+//       .catchError((e) => _status = AuthExceptionHandler.handleAuthException(e));
+//   print(_status.toString());
+//   return _status;
+// }
+
+Future resetPassword(String email,BuildContext ctx) async {
+  if(email.length<1){
+    _showSnackBar('Enter A Valid Email',ctx);
+  }else{
+    try {
+      await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: email);
+      _showSnackBar('Password reset link sent',ctx);
+    } on FirebaseAuthException catch (e) {
+      _showSnackBar(e.message.toString(),ctx);
+      return;
+    }
+  }
+
+}
+
+Future<void> _showSnackBar(String msg,BuildContext ctx) async {
+  final snackBar = SnackBar(
+    content: Text(msg),
+  );
+  ScaffoldMessenger.of(ctx).showSnackBar(snackBar);
 }
 class LoginScreen extends StatefulWidget {
   @override
@@ -333,7 +357,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           //       builder: (context) => RegisterScreen()),
                           // );
                           Firebase.initializeApp();
-                          resetPassword(email:user_email!);
+                          resetPassword(user_email!,context);
                         },
                         child: Text(
                           'Forgot PIN',
