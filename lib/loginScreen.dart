@@ -3,8 +3,20 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'produceScreen.dart';
 import 'registerScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
+addLoginState() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setBool("logged", true);
+}
 
+getLoginState() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  //Return bool
+  bool? boolValue = prefs.getBool('logged');
+  return boolValue;
+}
 class UserInfo {
   String user_name;
   String user_email;
@@ -55,7 +67,7 @@ Future<UserInfo> loginUser(UserInfo user, BuildContext ctx)async{
       },
       body:json.encode(userr));
   if(response2.statusCode ==200){
-
+    addLoginState();
     Navigator.push(
       ctx,
       MaterialPageRoute(
@@ -70,8 +82,69 @@ Future<UserInfo> loginUser(UserInfo user, BuildContext ctx)async{
 
 
 
+enum AuthStatus {
+  successful,
+  wrongPassword,
+  emailAlreadyExists,
+  invalidEmail,
+  weakPassword,
+  unknown,
+}
 
+class AuthExceptionHandler {
+  static handleAuthException(FirebaseAuthException e) {
+    AuthStatus status;
+    switch (e.code) {
+      case "invalid-email":
+        status = AuthStatus.invalidEmail;
+        break;
+      case "wrong-password":
+        status = AuthStatus.wrongPassword;
+        break;
+      case "weak-password":
+        status = AuthStatus.weakPassword;
+        break;
+      case "email-already-in-use":
+        status = AuthStatus.emailAlreadyExists;
+        break;
+      default:
+        status = AuthStatus.unknown;
+    }
+    return status;
+  }
+  static String generateErrorMessage(error) {
+    String errorMessage;
+    switch (error) {
+      case AuthStatus.invalidEmail:
+        errorMessage = "Your email address appears to be malformed.";
+        break;
+      case AuthStatus.weakPassword:
+        errorMessage = "Your password should be at least 6 characters.";
+        break;
+      case AuthStatus.wrongPassword:
+        errorMessage = "Your email or password is wrong.";
+        break;
+      case AuthStatus.emailAlreadyExists:
+        errorMessage =
+        "The email address is already in use by another account.";
+        break;
+      default:
+        errorMessage = "An error occured. Please try again later.";
+    }
+    return errorMessage;
+  }
+}
 
+Future<AuthStatus> resetPassword({required String email}) async {
+  final _auth = FirebaseAuth.instance;
+  AuthStatus _status;
+  _status = AuthStatus.successful;
+  await _auth
+      .sendPasswordResetEmail(email: email)
+      .then((value) => _status = AuthStatus.successful)
+      .catchError((e) => _status = AuthExceptionHandler.handleAuthException(e));
+  return _status;
+}
 class LoginScreen extends StatefulWidget {
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -79,6 +152,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   String? user_name,user_email,user_created,user_password;
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -187,10 +262,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: TextButton(
                       onPressed: () {
                         var user = UserInfo(user_name: "",
-                            user_email: user_email!,
+                            user_email: "user_email!",
                             user_created: "",
-                            user_password: user_password!);
+                            user_password: "user_password!");
                         loginUser(user,context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => produceScreen(userinfo:user)),
+                        );
                       },
                       child: Text('Login',
                           style: TextStyle(

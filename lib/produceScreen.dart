@@ -2,10 +2,18 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:transparent_image/transparent_image.dart';
 
-import 'loginScreen.dart';
+import 'AddImage.dart';
 
+class ImagesUrl {
+  final String url;
 
+  ImagesUrl({
+    required this.url,
+  });
+}
 class produceScreen extends StatefulWidget {
   var userinfo;
 
@@ -14,125 +22,27 @@ class produceScreen extends StatefulWidget {
   State<produceScreen> createState() => _produceScreenState();
 }
 
-class UserInfo {
-  String user_name;
-  String user_email;
-  String user_created;
-  String user_password;
-
-  UserInfo({
-    required this.user_name,
-    required this.user_email,
-    required this.user_created,
-    required this.user_password,
-  });
 
 
-  Map<String, dynamic> toJson() {
-    return {
-      'username': user_name,
-      'email': user_email,
-      'created': user_created,
-      'password': user_password
-    };
+
+Future<List<ImagesUrl>> fetchImages() async {
+
+  Uri url = Uri.parse("https://jsonplaceholder.typicode.com/posts");
+  final response = await http.get(url);
+
+  var responseData = json.decode(response.body);
+
+  //Creating a list to store input data;
+  List<ImagesUrl> users = [];
+  for (var singleImg in responseData) {
+    ImagesUrl img = ImagesUrl(
+        url: singleImg["url"]);
+
+    //Adding user to the list.
+    users.add(img);
   }
-
-  Map<String, dynamic> authJson(email,pass) {
-    return {
-      'email': email,
-      'password': pass
-    };
-  }
-
-  Map<String, dynamic> delJson(email,pass) {
-    return {
-      'email': email,
-      'password': pass
-    };
-  }
-
-
-  UserInfo getString(json) {
-    return UserInfo(
-      user_name: json['username'],
-      user_email: json['email'],
-      user_created: json['created'],
-      user_password: json['password'],
-    );
-  }
+  return users;
 }
-
-Future<UserInfo> registerUser(UserInfo user, BuildContext ctx)async{
-  var baseurl = "http://5e2b-105-21-41-70.ngrok.io";
-  var url = Uri.parse(baseurl+"/create");
-  var response = await http.post(url,
-      headers:<String,String>{
-        "Content-Type":"application/json"
-      },
-      body:json.encode(user.toJson()));
-
-  String resString = response.body;
-  if(response.statusCode ==200){
-    print(resString);
-  }else{
-    print("Error: "+response.body);
-  }
-
-  return user;
-}
-
-
-Future<UserInfo> deleteUser(UserInfo user, BuildContext ctx)async{
-var baseurl = "http://5e2b-105-21-41-70.ngrok.io";
-  var url = Uri.parse(baseurl+"/delete?user="+user.user_name);
-  var userr =  user.authJson(user.user_email,user.user_password);
-  var response = await http.put(url,
-      headers:<String,String>{
-        "Content-Type":"application/json"
-      },
-      body:json.encode(user.toJson()));
-
-  if(response.statusCode ==200){
-    print(response.body);
-  }else{
-    print("Error with auth: "+response.body);
-  }
-
-
-
-  return user;
-}
-
-
-class ProductsList {
-  //  project TEXT,option TEXT,name TEXT,price INTEGER
-  // ProductsList({required this.project,required this.option,required this.name, required this.price, this.id = 0});
-  String name,project,option;
-  double price;
-  int id;
-
-  ProductsList({required this.project,required this.option,required this.name, required this.price, this.id = 0});
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'project': project,
-      'option': option,
-      'price': price
-    };
-  }
-
-
-  ProductsList getString(json) {
-    return ProductsList(
-      name: json['name'],
-      price: json['price'],
-      project: json['project'],
-      option: json['option'],
-    );
-  }
-}
-
 class _produceScreenState extends State<produceScreen> {
 
 
@@ -144,285 +54,191 @@ class _produceScreenState extends State<produceScreen> {
     String user_password = widget.userinfo!.user_password;
     // UserInfo  user= widget.userinfo!;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Container(
-          child: Column(children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                //Back Button
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(11),
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.black12,
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.arrow_back_ios_new_outlined, size: 15),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          child: Container(
+            child: Column(children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  //Back Button
+                  Align(
+                    alignment: Alignment.topLeft,
                     child: InkWell(
                       onTap: () {
                         Navigator.pop(context);
                       },
                       child: Container(
                         padding: EdgeInsets.all(11),
-                        width: 49,
+                        width: 40,
                         decoration: BoxDecoration(
-                          // color: Colors.black12,
+                          color: Colors.black12,
                           border: Border.all(color: Colors.white),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.notifications, size: 25),
+                            Icon(Icons.arrow_back_ios_new_outlined, size: 15),
                           ],
                         ),
                       ),
                     ),
                   ),
-                ),
-                //Notification Buutton
-
-                //Body
-              ],
-            ),
-
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: 10),
-                  Text(
-                    'User info',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontFamily: 'MuseoSans',
-                      fontSize: 32,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  //Full name box
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: TextField(
-                          // user_name,user_email,user_created,user_password;
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              user_name = newValue!;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: widget.userinfo!.user_name,
-                            icon: Icon(Icons.people),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(11),
+                          width: 49,
+                          decoration: BoxDecoration(
+                            // color: Colors.black12,
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.notifications, size: 25),
+                            ],
                           ),
                         ),
                       ),
                     ),
                   ),
+                  //Notification Buutton
 
-                  //  email field
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: TextField(
-                          // ,user_created,user_password;
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              user_email = newValue!;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            icon: Icon(Icons.email),
-                            hintText: widget.userinfo!.user_email,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  //  Password
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: TextField(
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              user_password = newValue!;
-                            });
-                          },
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            icon: Icon(Icons.password),
-                            hintText: 'Password',
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  //  Confirm Passowrd
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: TextField(
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              user_created = newValue!;
-                            });
-                          },
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            icon: Icon(Icons.password),
-                            hintText: 'Confirm Password',
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Color(0xff39B54A),
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: TextButton(
-                          onPressed: () {
-
-                            var user =  UserInfo(
-                              user_name: user_name,
-                              user_email: user_email,
-                              user_created: user_created,
-                              user_password: user_password,
-                            );
-                            registerUser(user,context);
-
-                          },
-                          child: Text('Update',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'MuseoSans',
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              )),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: TextButton(
-                          onPressed: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) => ProfileScreen()),
-                            // );
-                            var user =  UserInfo(
-                              user_name: user_name,
-                              user_email: user_email,
-                              user_created: user_created,
-                              user_password: user_password,
-                            );
-                            deleteUser(user,context);
-
-                          },
-                          child: Text('Delete',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'MuseoSans',
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              )),
-                        ),
-                      ),
-                    ),
-                  ),
-
-
-
-
-
+                  //Body
                 ],
               ),
-            ),
 
-          ]),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 10),
+                    Text(
+                      'User info',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: 'MuseoSans',
+                        fontSize: 32,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    //Full name box
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          border: Border.all(color: Colors.white),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: TextField(
+                            // user_name,user_email,user_created,user_password;
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                user_name = newValue!;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: widget.userinfo!.user_name,
+                              icon: Icon(Icons.people),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 20),
+                    // Container(
+                    //   width: 300,
+                    //   height:300,
+                    //   child: GridView.builder(
+                    //       itemCount: 7,
+                    //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    //           crossAxisCount: 3),
+                    //       itemBuilder: (context, index) {
+                    //         return Container(
+                    //           margin: EdgeInsets.all(3),
+                    //           child: FadeInImage.memoryNetwork(
+                    //               fit: BoxFit.cover,
+                    //               placeholder: kTransparentImage,
+                    //               image: 'https://picsum.photos/250?image=9',
+                    //         ));
+                    //       }),
+                    // ),
+                    Container(
+                      width: 300,
+                      height:300,
+                      child:FutureBuilder(
+                        future: fetchImages(),
+                        builder: (BuildContext ctx, AsyncSnapshot snapshot) {
+                          if (snapshot.data == null) {
+                            return Container(
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          } else {
+                            return GridView.builder(
+                                itemCount: snapshot.data.length,
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3),
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                      margin: EdgeInsets.all(3),
+                                      child: FadeInImage.memoryNetwork(
+                                        fit: BoxFit.cover,
+                                        placeholder: kTransparentImage,
+                                        image: snapshot.data[index].url,
+                                      ));
+                                });
+                          }
+                        },
+                      ),
+                    )
+
+
+
+
+
+
+
+                  ],
+                ),
+              ),
+
+            ]),
+          ),
         ),
-      ),
+        floatingActionButton: FloatingActionButton(
+          child:Icon(Icons.add),
+          onPressed: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddImage()),
+            );
+          },
+        ),
 
+      ),
     );
   }
 }

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "565181595794",
+    "project_id": "stoneage-82c46",
+    "storage_bucket": "stoneage-82c46.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565181595794:android:dcd775a59320d12ad4e64b",
+        "android_client_info": {
+          "package_name": "com.stoneage.interviewstoneage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "565181595794-954tf1kcg7blm0etbthpibabh1com2jm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUyKEfu7wMu8u9o8QE2NqurlC8SP4NKgQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "565181595794-954tf1kcg7blm0etbthpibabh1com2jm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
