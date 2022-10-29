@@ -75,12 +75,11 @@ Future<UserInfo> loginUser(UserInfo user, BuildContext ctx)async{
           builder: (ctx) => produceScreen(userinfo:user)),
     );
   }else{
-    print("Error with auth: "+response2.body);
+    print("Error with auth: "+user.user_email+" "+response2.body);
   }
 
   return user;
 }
-
 
 // mokikata@gmail.coM
 enum AuthStatus {
@@ -94,6 +93,7 @@ enum AuthStatus {
 
 class AuthExceptionHandler {
   static handleAuthException(FirebaseAuthException e) {
+    Firebase.initializeApp();
     AuthStatus status;
     switch (e.code) {
       case "invalid-email":
@@ -114,6 +114,7 @@ class AuthExceptionHandler {
     return status;
   }
   static String generateErrorMessage(error) {
+    Firebase.initializeApp();
     String errorMessage;
     switch (error) {
       case AuthStatus.invalidEmail:
@@ -137,7 +138,7 @@ class AuthExceptionHandler {
 }
 
 Future<AuthStatus> resetPassword( {required String email}) async {
-  Firebase.initializeApp();
+ await Firebase.initializeApp();
   final _auth = FirebaseAuth.instance;
   AuthStatus _status;
   _status = AuthStatus.successful;
@@ -271,9 +272,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: TextButton(
                       onPressed: () {
                         var user = UserInfo(user_name: "",
-                            user_email: "user_email!",
+                            user_email: user_email!,
                             user_created: "",
-                            user_password: "user_password!");
+                            user_password: user_password!);
                         loginUser(user,context);
                         Navigator.push(
                           context,

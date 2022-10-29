@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 // import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import 'AddImage.dart';
@@ -97,9 +99,7 @@ class _produceScreenState extends State<produceScreen> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 15.0),
                       child: InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
+                        onTap: () {},
                         child: Container(
                           padding: EdgeInsets.all(11),
                           width: 49,
@@ -136,34 +136,6 @@ class _produceScreenState extends State<produceScreen> {
                         color: Colors.black,
                         fontFamily: 'MuseoSans',
                         fontSize: 32,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    //Full name box
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: TextField(
-                            // user_name,user_email,user_created,user_password;
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                user_name = newValue!;
-                              });
-                            },
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: widget.userinfo!.user_name,
-                              icon: Icon(Icons.people),
-                            ),
-                          ),
-                        ),
                       ),
                     ),
 
@@ -232,6 +204,7 @@ class _produceScreenState extends State<produceScreen> {
         floatingActionButton: FloatingActionButton(
           child:Icon(Icons.add),
           onPressed: (){
+            Firebase.initializeApp();
             Navigator.push(
               context,
               MaterialPageRoute(

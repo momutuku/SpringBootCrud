@@ -11,9 +11,9 @@ import 'package:path/path.dart' as Path;
 
 class AddImage extends StatefulWidget {
 
-
   @override
   State<AddImage> createState() => _AddImageState();
+
 }
 
 
@@ -107,6 +107,7 @@ class _AddImageState extends State<AddImage> {
   }
 
   chooseImage() async {
+    await Firebase.initializeApp();
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
     setState(() {
       _image.add(File(pickedFile!.path));
@@ -115,6 +116,7 @@ class _AddImageState extends State<AddImage> {
   }
 
   Future<void> retrieveLostData() async {
+    await Firebase.initializeApp();
     final LostData response = await picker.getLostData();
     if (response.isEmpty) {
       return;
@@ -140,6 +142,7 @@ class _AddImageState extends State<AddImage> {
           .ref()
           .child('images/${Path.basename(img.path)}');
       await ref.putFile(img).whenComplete(() async {
+        await Firebase.initializeApp();
         await ref.getDownloadURL().then((value) {
           imgRef.add({'url': value});
           i++;
@@ -151,7 +154,7 @@ class _AddImageState extends State<AddImage> {
   @override
   void initState() {
     super.initState();
-    Firebase.initializeApp();
+     Firebase.initializeApp();
     imgRef = FirebaseFirestore.instance.collection('imageURLs');
   }
 }
