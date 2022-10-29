@@ -5,6 +5,7 @@ import 'produceScreen.dart';
 import 'registerScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 addLoginState() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -81,7 +82,7 @@ Future<UserInfo> loginUser(UserInfo user, BuildContext ctx)async{
 }
 
 
-
+// mokikata@gmail.coM
 enum AuthStatus {
   successful,
   wrongPassword,
@@ -136,6 +137,7 @@ class AuthExceptionHandler {
 }
 
 Future<AuthStatus> resetPassword( {required String email}) async {
+  Firebase.initializeApp();
   final _auth = FirebaseAuth.instance;
   AuthStatus _status;
   _status = AuthStatus.successful;
@@ -153,10 +155,17 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   String? user_name,user_email,user_created,user_password;
 
+  @override
+  void initState() {
+    super.initState();
+    Firebase.initializeApp();
+  }
+
 
 
   @override
   Widget build(BuildContext context) {
+    Firebase.initializeApp();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -314,7 +323,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     Padding(
                       padding:
-                      const EdgeInsets.fromLTRB(110.00, 0.00, 0.00, 0.0),
+                      const EdgeInsets.fromLTRB(111.00, 0.00, 0.00, 0.0),
                       child: InkWell(
                         onTap: () {
                           // Navigator.push(
@@ -322,6 +331,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           //   MaterialPageRoute(
                           //       builder: (context) => RegisterScreen()),
                           // );
+                          Firebase.initializeApp();
                           resetPassword(email:user_email!);
                         },
                         child: Text(

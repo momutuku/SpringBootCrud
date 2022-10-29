@@ -27,16 +27,18 @@ class produceScreen extends StatefulWidget {
 
 Future<List<ImagesUrl>> fetchImages() async {
 
-  Uri url = Uri.parse("http://eplace_this/get?url=9fxvs47IdkNY7xK5aZGU");
+  Uri url = Uri.parse("http://9fb3-105-160-92-81.ngrok.io/get?url=9fxvs47IdkNY7xK5aZGU");
   final response = await http.get(url);
 
   var responseData = json.decode(response.body);
 
   //Creating a list to store input data;
   List<ImagesUrl> users = [];
+  print(responseData);
   for (var singleImg in responseData) {
     ImagesUrl img = ImagesUrl(
         url: singleImg["url"]);
+    print(singleImg["url"]);
 
     //Adding user to the list.
     users.add(img);
